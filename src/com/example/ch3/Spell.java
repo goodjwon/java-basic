@@ -1,4 +1,4 @@
-package com.example.ch2;
+package com.example.ch3;
 
 class Spell {
     public void cast(String spellName) {

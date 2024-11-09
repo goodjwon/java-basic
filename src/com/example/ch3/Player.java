@@ -1,4 +1,4 @@
-package com.example.ch2;
+package com.example.ch3;
 
 public class Player {
     private String name;

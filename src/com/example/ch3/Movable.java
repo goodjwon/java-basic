@@ -1,4 +1,4 @@
-package com.example.ch2;
+package com.example.ch3;
 
 public interface Movable {
     void move(int x, int y);

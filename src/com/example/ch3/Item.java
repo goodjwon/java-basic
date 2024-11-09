@@ -1,4 +1,4 @@
-package com.example.ch2;
+package com.example.ch3;
 
 abstract class Item {
     protected String name;
