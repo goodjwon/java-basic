@@ -14,7 +14,7 @@ public class DataAnalyzer {
     // 데이터 로드
     public void loadData() {
         // 수백만 건의 데이터를 로드합니다.
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 1_000_000; i++) {
             dataList.add(i);
         }
         System.out.println("데이터 로드 완료: " + dataList.size() + "건");
