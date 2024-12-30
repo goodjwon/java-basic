@@ -27,3 +27,12 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### 대량파일 제회 ###
+largeFile1.txt
+largeFile2.txt
+mergedFile.txt
+io_example.txt
+
+
+target/
