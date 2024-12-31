@@ -1,0 +1,81 @@
+{
+  "maps": [
+    {
+      "mapId": "dungeon1",
+      "name": "Dungeon: Slime Cave",
+      "monsters": ["slime", "slime_king"],
+      "recommendedLevel": 1
+    },
+    {
+      "mapId": "dungeon2",
+      "name": "Goblin Hideout",
+      "monsters": ["goblin", "goblin_chief"],
+      "recommendedLevel": 5
+    }
+  ],
+  "monsters": [
+    {
+      "monsterId": "slime",
+      "name": "Slime",
+      "hp": 20,
+      "attack": 3,
+      "expReward": 10,
+      "drops": [
+        { "itemId": "small_potion", "chance": 0.3 }
+      ]
+    },
+    {
+      "monsterId": "slime_king",
+      "name": "King Slime",
+      "hp": 100,
+      "attack": 8,
+      "expReward": 50,
+      "drops": [
+        { "itemId": "king_slime_core", "chance": 0.1 }
+      ]
+    },
+    {
+      "monsterId": "goblin",
+      "name": "Goblin",
+      "hp": 40,
+      "attack": 5,
+      "expReward": 15,
+      "drops": [
+        { "itemId": "small_potion", "chance": 0.2 },
+        { "itemId": "rusty_dagger", "chance": 0.05 }
+      ]
+    },
+    {
+      "monsterId": "goblin_chief",
+      "name": "Goblin Chief",
+      "hp": 150,
+      "attack": 12,
+      "expReward": 80,
+      "drops": [
+        { "itemId": "goblin_waraxe", "chance": 0.15 }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "itemId": "small_potion",
+      "name": "Small Healing Potion",
+      "effect": "hp+20"
+    },
+    {
+      "itemId": "king_slime_core",
+      "name": "King Slime Core",
+      "effect": "questItem"
+    },
+    {
+      "itemId": "rusty_dagger",
+      "name": "Rusty Dagger",
+      "attackPower": 3
+    },
+    {
+      "itemId": "goblin_waraxe",
+      "name": "Goblin Waraxe",
+      "attackPower": 10
+    }
+  ]
+}

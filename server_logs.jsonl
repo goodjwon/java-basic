@@ -1,0 +1,3 @@
+{"timestamp":"2024-12-31T05:07:53.990237Z","eventType":"USER_CREATED","userName":"userA"}
+{"timestamp":"2024-12-31T05:08:07.021286Z","eventType":"ADD_EXP","userName":"userA","detail":"amount=50"}
+{"timestamp":"2024-12-31T05:08:24.594135Z","userId":"userA","eventType":"MONSTER_KILL","details":{"monsterId":"slime","mapId":"dungeon1","expGained":10}}
