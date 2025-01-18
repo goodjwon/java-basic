@@ -1,0 +1,3 @@
+[1737150424899] Entered dungeon: Haunted Grove
+[1737150424906] Defeated monster: Goblin. Earned 50 XP and found Health Potion.
+[1737150424906] Defeated boss: Necromancer. Earned 300 XP and 100 Gold.
