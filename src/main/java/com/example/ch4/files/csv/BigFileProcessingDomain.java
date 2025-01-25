@@ -121,6 +121,7 @@ public class BigFileProcessingDomain {
         private int highScoreCount;
         private int namePrefixCount;
 
+
         /**
          * @param scoreThreshold 예: 점수가 90 이상인지 확인
          * @param namePrefix     예: '김'으로 시작하는 사용자
@@ -140,6 +141,7 @@ public class BigFileProcessingDomain {
             count++;
             minAge = Math.min(minAge, age);
             maxAge = Math.max(maxAge, age);
+            System.out.println(minAge);
 
             // 점수 통계
             if (user.getScore() >= scoreThreshold) {

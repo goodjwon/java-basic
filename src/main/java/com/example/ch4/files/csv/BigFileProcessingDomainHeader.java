@@ -249,7 +249,7 @@ public class BigFileProcessingDomainHeader {
     private static final String FILE_NAME = "sample_data.csv";
 
     public static void main(String[] args) {
-        try (InputStream inputStream = BigFileProcessingDomain.class
+        try (InputStream inputStream = BigFileProcessingDomainHeader.class
                 .getClassLoader()
                 .getResourceAsStream(FILE_NAME)) {
 
