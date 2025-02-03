@@ -110,6 +110,8 @@ public class ExcelProcessor {
         String inputFilePath = getResourceFilePath("ch4.data.xlsx");
         String outputFilePath = "filtered_data.xlsx";
 
+        System.out.println(inputFilePath);
+
         // 1. 엑셀 읽기
         List<Employee> employees = readExcel(inputFilePath);
         System.out.println("전체 데이터:");
