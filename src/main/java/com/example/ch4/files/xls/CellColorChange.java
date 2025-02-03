@@ -1,6 +1,10 @@
 package com.example.ch4.files.xls;
 
+
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.*;
 import java.util.ArrayList;
@@ -21,101 +25,108 @@ public class CellColorChange {
         }
     }
 
-    public static List<StudentData> changeColor(String filePath) {
+    /**
+     * 원본 엑셀 파일을 열고(inputPath 사용), 첫 번째 시트를 가져와서 모든 행을 순회하는 부분
+     * createRedCellStyle 메서드에서 빨간색 셀 스타일 생성
+     * processRow 메서드에서 각 행의 데이터를 읽고, 조건(점수 < 50)일 때 스타일 적용
+     * 작업이 끝나면 modified_grades.xlsx라는 새 파일로 저장
+     * @param inputPath
+     * @return
+     */
+    public static List<StudentData> processWorkbook(String inputPath) {
         List<StudentData> studentData = new ArrayList<>();
-        Workbook workbook = null;
 
-        try (FileInputStream fis = new FileInputStream(filePath)) {
-            // 1. 워크북 로드 및 스타일 생성
-            workbook = new XSSFWorkbook(fis);
+        try (Workbook workbook = new XSSFWorkbook(new FileInputStream(inputPath))) {
             CellStyle redStyle = createRedCellStyle(workbook);
+            Sheet sheet = workbook.getSheetAt(0);
 
-            // 2. 데이터 처리 및 스타일 적용
-            processWorkbook(workbook, studentData, redStyle);
+            Iterator<Row> rows = sheet.iterator();
+            if (rows.hasNext()) rows.next(); // 헤더 스킵
 
-            // 3. 변경 사항 저장
-            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            while (rows.hasNext()) {
+                Row row = rows.next();
+                processRow(row, studentData, redStyle);
+            }
+
+            // 변경 사항을 새로운 파일로 저장
+            String outputPath = ExcelUtils.getOutputPath("modified_grades.xlsx");
+            try (FileOutputStream fos = new FileOutputStream(outputPath)) {
                 workbook.write(fos);
             }
 
         } catch (IOException e) {
-            throw new ExcelUtils.ExcelException("파일 처리 실패: " + filePath, e);
-        } finally {
-            closeWorkbook(workbook);
+            throw new ExcelUtils.ExcelException("파일 처리 실패: " + inputPath, e);
         }
         return studentData;
     }
 
-    private static void processWorkbook(
-            Workbook workbook,
-            List<StudentData> dataList,
-            CellStyle redStyle
-    ) {
-        Sheet sheet = workbook.getSheetAt(0);
-        Iterator<Row> rows = sheet.iterator();
-        if (rows.hasNext()) rows.next(); // 헤더 스킵
-
-        while (rows.hasNext()) {
-            Row row = rows.next();
-            processRow(row, dataList, redStyle);
-        }
-    }
-
+    /**
+     * 현재 행(Row)의 이름, 과목, 점수 데이터를 추출
+     * 세 번째 셀(점수 셀)이 없거나 빈 셀이면 Row.MissingCellPolicy.CREATE_NULL_AS_BLANK 옵션으로 생성 후 0으로 초기화
+     * scoreCell.setCellType(CellType.NUMERIC) 후 scoreCell.setCellValue(0.0) 호출로 실제 숫자 셀로 만든 뒤 0 대입
+     * 그 후 ExcelUtils.getNumericValue로 점수(double) 추출
+     * 점수가 50 미만이면 redStyle을 셀에 적용
+     * @param row
+     * @param dataList
+     * @param redStyle
+     */
     private static void processRow(
             Row row,
             List<StudentData> dataList,
             CellStyle redStyle
     ) {
         try {
-            // 엑셀 유틸리티로 데이터 추출
             String name = ExcelUtils.getStringValue(row, 0);
             String subject = ExcelUtils.getStringValue(row, 1);
+
+            // 점수 셀 강제 생성
+            Cell scoreCell = row.getCell(2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+
+            // 빈 셀이면 0으로 초기화
+            if (scoreCell.getCellType() == CellType.BLANK) {
+                scoreCell.setCellType(CellType.NUMERIC);
+                scoreCell.setCellValue(0.0);
+            }
+
             double score = ExcelUtils.getNumericValue(row, 2);
 
             dataList.add(new StudentData(name, subject, score));
 
-            // 조건에 따른 스타일 적용
+            // 50 미만이면 빨간색
             if (score < 50) {
-                Cell scoreCell = row.getCell(2);
-                if (scoreCell != null) {
-                    scoreCell.setCellStyle(redStyle);
-                }
+                scoreCell.setCellStyle(redStyle);
             }
+
         } catch (Exception e) {
             System.err.printf("Row %d 처리 실패: %s%n",
                     row.getRowNum() + 1, e.getMessage());
         }
     }
 
-    private static CellStyle createRedCellStyle(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        style.setFillForegroundColor(IndexedColors.RED.getIndex());
+    /**
+     * XSSFCellStyle 인스턴스 생성
+     * XSSFColor를 사용해 RGB(255,0,0) 값을 넣어 빨간색 지정
+     * 스타일 패턴(SOLID_FOREGROUND)을 적용해서 셀에 완전한 배경색이 들어가도록 설정
+     * @param workbook
+     * @return
+     */
+    private static XSSFCellStyle createRedCellStyle(Workbook workbook) {
+        XSSFCellStyle style = (XSSFCellStyle) workbook.createCellStyle();
+        XSSFColor redColor = new XSSFColor(new java.awt.Color(255, 0, 0), new DefaultIndexedColorMap());
+        style.setFillForegroundColor(redColor);
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
 
-    private static void closeWorkbook(Workbook workbook) {
-        try {
-            if (workbook != null) {
-                workbook.close();
-            }
-        } catch (IOException e) {
-            System.err.println("워크북 닫기 오류: " + e.getMessage());
-        }
-    }
-
     public static void main(String[] args) {
         try {
-            // 1. 리소스 경로 조회
             String inputPath = ExcelUtils.getResourcePath("grades.xlsx");
-            String outputPath = "modified_grades.xlsx";
+            List<StudentData> data = processWorkbook(inputPath);
 
-            // 2. 파일 처리 (원본 파일 수정)
-            List<StudentData> data = changeColor(inputPath);
-
-            // 3. 새로운 파일 생성 (유틸리티 사용)
+            // ExcelUtils를 이용해 데이터 검증 및 저장 (필요시 사용)
+            /*
             ExcelUtils.writeExcel(
-                    outputPath,
+                    "validated_grades.xlsx",
                     data,
                     new String[]{"이름", "과목", "점수"},
                     (student, row) -> {
@@ -124,8 +135,9 @@ public class CellColorChange {
                         row.createCell(2).setCellValue(student.score);
                     }
             );
+            */
 
-            System.out.println("처리 완료! 결과 파일: " + outputPath);
+            System.out.println("처리 완료! 결과 파일: " + ExcelUtils.getOutputPath("modified_grades.xlsx"));
 
         } catch (ExcelUtils.ExcelException e) {
             System.err.println("오류 발생: " + e.getMessage());
